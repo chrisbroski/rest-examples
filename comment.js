@@ -8,6 +8,17 @@ var http = require('http'),
     templates = {},
     server;
 
+function handleError(err, res) {
+    if (err) {
+        res.statusCode = 500;
+        res.setHeader('content-type', 'text/plain');
+        res.end(err);
+
+        console.error(err);
+        process.exit(1);
+    }
+}
+
 function loadFiles() {
     'use strict';
     console.log('Loading mustache templates...');
@@ -47,31 +58,27 @@ function validate(res, body) {
 
 function get(req, res) {
     'use strict';
-    fs.readFile(commentData, function (err, data) {
-        var commentTemplate = templates.comments;
 
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
+    fs.readFile(commentData, function (err, data) {
+        var id;
+
+        handleError(err, res);
 
         data = JSON.parse(data);
-        /*if (req.params.id) {
-            data = data.filter(function (c) {
-                if (c.id === parseInt(req.params.id, 10)) {
-                    return true;
-                }
-                return false;
+        id = parseInt(req.url.slice(req.url.lastIndexOf('/') + 1), 10);
+
+        if (id) {
+            data = data.filter(function (comment) {
+                return comment.id === id;
             });
 
             if (data.length < 1) {
                 res.statusCode = 404;
                 res.setHeader('content-type', 'text/plain');
-                res.end('Comment #' + req.params.id + ' not found', 'utf-8');
+                res.end('Comment #' + id + ' not found', 'utf-8');
                 return;
             }
-            commentTemplate = templates.comment;
-        }*/
+        }
 
         res.setHeader('Cache-Control', 'max-age=0,no-cache,no-store,post-check=0,pre-check=0');
 
@@ -83,19 +90,22 @@ function get(req, res) {
             res.end(mustache.render(templates.partialComment, data), 'utf-8');
         } else {
             res.setHeader('content-type', 'text/html');
-            res.end(mustache.render(commentTemplate, data), 'utf-8');
+            if (id) {
+                res.end(mustache.render(templates.comment, data), 'utf-8');
+            } else {
+                res.end(mustache.render(templates.comments, data), 'utf-8');
+            }
         }
     });
 }
 
 function post(res, body) {
     'use strict';
+
     fs.readFile(commentData, function (err, data) {
         var comments, newComment;
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
+        handleError(err, res)
+
         comments = JSON.parse(data);
         if (!validate(res, body)) {
             return;
@@ -109,10 +119,7 @@ function post(res, body) {
 
         comments.push(newComment);
         fs.writeFile(commentData, JSON.stringify(comments, null, 4), function (err) {
-            if (err) {
-                console.error(err);
-                process.exit(1);
-            }
+            handleError(err, res)
 
             res.writeHead(201, {'content-type': 'text/plain'});
             res.end('Comment #' + newComment.id + ' added', 'utf-8');
