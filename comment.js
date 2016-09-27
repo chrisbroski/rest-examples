@@ -75,10 +75,10 @@ function get(req, res) {
 
         res.setHeader('Cache-Control', 'max-age=0,no-cache,no-store,post-check=0,pre-check=0');
 
-        if (req.headers['content-type'] === 'application/json') {
+        if (req.headers['accept'] === 'application/json') {
             res.setHeader('content-type', 'application/json');
             res.end(JSON.stringify(data));
-        } else if (req.headers['content-type'] === 'text/pht') {
+        } else if (req.headers['accept'] === 'text/pht') {
             res.setHeader('content-type', 'text/pht');
             res.end(mustache.render(templates.partialComment, data), 'utf-8');
         } else {
