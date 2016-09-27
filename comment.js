@@ -163,7 +163,7 @@ function main(req, res) {
 
 loadFiles();
 
-server = http.createServer(main).listen(51001, function () {
+server = http.createServer(main).listen(4999, function () {
     'use strict';
-    console.log('Server running on port 51001');
+    console.log('Server running on port 4999');
 });

@@ -27,3 +27,21 @@ GET request with Accept header
 Node file: `03-hw-verbs.js`
 
     DELETE / HTTP/1.1
+
+## Comment Service
+
+Make an nginx reverse proxy like so
+
+    server {
+        listen 60018;
+        root /Users/christopherbroski/projects/rest-examples/www;
+
+        location / {
+            try_files $uri $uri/ $uri.html $uri.shtml $uri.txt =404;
+        }
+
+        location /comment {
+            proxy_pass http://127.0.0.1:4999;
+            proxy_set_header Host $host;
+        }
+    }
