@@ -1,21 +1,16 @@
 var http = require('http');
 
-http.createServer(function (req, resp) {
+http.createServer(function (req, rsp) {
     if (req.headers['accept'] === 'application/json') {
-        resp.writeHead(200, {'Content-Type': 'application/json'});
-        resp.end('{"message": "Hello World"}\n');
+        rsp.writeHead(200, {'Content-Type': 'application/json'});
+        rsp.end('{"message": "Hello World"}');
     } else {
-        resp.writeHead(200, {'Content-Type': 'text/plain'});
-        resp.end('Hello World\n');
+        rsp.writeHead(200, {'Content-Type': 'text/plain'});
+        rsp.end('Hello World');
     }
 }).listen(4902, function () {
     console.log('Server started on port :4902');
 });
-
-// Simple GET
-/*
-GET / HTTP/1.1
-*/
 
 // GET with Accept header
 /*

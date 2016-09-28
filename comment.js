@@ -1,18 +1,15 @@
-/*jslint node: true */
-
 var http = require('http'),
     fs = require('fs'),
     mustache = require('Mustache'),
     qs = require('querystring'),
     commentData = 'comments.json',
-    templates = {},
-    server;
+    templates = {};
 
-function handleError(err, res) {
+function handleError(err, rsp) {
     if (err) {
-        res.statusCode = 500;
-        res.setHeader('content-type', 'text/plain');
-        res.end(err);
+        rsp.statusCode = 500;
+        rsp.setHeader('content-type', 'text/plain');
+        rsp.end(err);
 
         console.error(err);
         process.exit(1);
@@ -20,7 +17,6 @@ function handleError(err, res) {
 }
 
 function loadFiles() {
-    'use strict';
     console.log('Loading mustache templates...');
 
     /*jslint stupid: true */
@@ -35,34 +31,30 @@ function loadFiles() {
     /*jslint stupid: false */
 }
 
-function validate(res, body) {
-    'use strict';
-
+function validate(rsp, body) {
     // Author is required
     if (!body.author) {
-        res.statusCode = 400;
-        res.setHeader('content-type', 'text/plain');
-        res.end('Author name is required', 'utf-8');
+        rsp.statusCode = 400;
+        rsp.setHeader('content-type', 'text/plain');
+        rsp.end('Author name is required', 'utf-8');
         return false;
     }
 
     // body text is required
     if (!body.text) {
-        res.statusCode = 400;
-        res.setHeader('content-type', 'text/plain');
-        res.end('Comment message is required', 'utf-8');
+        rsp.statusCode = 400;
+        rsp.setHeader('content-type', 'text/plain');
+        rsp.end('Comment message is required', 'utf-8');
         return false;
     }
     return true;
 }
 
-function get(req, res) {
-    'use strict';
-
+function get(req, rsp) {
     fs.readFile(commentData, function (err, data) {
         var id;
 
-        handleError(err, res);
+        handleError(err, rsp);
 
         data = JSON.parse(data);
         id = parseInt(req.url.slice(req.url.lastIndexOf('/') + 1), 10);
@@ -73,41 +65,39 @@ function get(req, res) {
             });
 
             if (data.length < 1) {
-                res.statusCode = 404;
-                res.setHeader('content-type', 'text/plain');
-                res.end('Comment #' + id + ' not found', 'utf-8');
+                rsp.statusCode = 404;
+                rsp.setHeader('content-type', 'text/plain');
+                rsp.end('Comment #' + id + ' not found', 'utf-8');
                 return;
             }
         }
 
-        res.setHeader('Cache-Control', 'max-age=0,no-cache,no-store,post-check=0,pre-check=0');
+        rsp.setHeader('Cache-Control', 'max-age=0,no-cache,no-store,post-check=0,pre-check=0');
 
         if (req.headers['accept'] === 'application/json') {
-            res.setHeader('content-type', 'application/json');
-            res.end(JSON.stringify(data));
+            rsp.setHeader('content-type', 'application/json');
+            rsp.end(JSON.stringify(data));
         } else if (req.headers['accept'] === 'text/pht') {
-            res.setHeader('content-type', 'text/pht');
-            res.end(mustache.render(templates.partialComment, data), 'utf-8');
+            rsp.setHeader('content-type', 'text/pht');
+            rsp.end(mustache.render(templates.partialComment, data), 'utf-8');
         } else {
-            res.setHeader('content-type', 'text/html');
+            rsp.setHeader('content-type', 'text/html');
             if (id) {
-                res.end(mustache.render(templates.comment, data), 'utf-8');
+                rsp.end(mustache.render(templates.comment, data), 'utf-8');
             } else {
-                res.end(mustache.render(templates.comments, data), 'utf-8');
+                rsp.end(mustache.render(templates.comments, data), 'utf-8');
             }
         }
     });
 }
 
-function post(res, body) {
-    'use strict';
-
+function post(rsp, body) {
     fs.readFile(commentData, function (err, data) {
         var comments, newComment;
-        handleError(err, res)
+        handleError(err, rsp)
 
         comments = JSON.parse(data);
-        if (!validate(res, body)) {
+        if (!validate(rsp, body)) {
             return;
         }
 
@@ -119,16 +109,15 @@ function post(res, body) {
 
         comments.push(newComment);
         fs.writeFile(commentData, JSON.stringify(comments, null, 4), function (err) {
-            handleError(err, res)
+            handleError(err, rsp)
 
-            res.writeHead(201, {'content-type': 'text/plain'});
-            res.end('Comment #' + newComment.id + ' added', 'utf-8');
+            rsp.writeHead(201, {'content-type': 'text/plain'});
+            rsp.end('Comment #' + newComment.id + ' added', 'utf-8');
         });
     });
 }
 
-function routeMethods(req, res, body) {
-    'use strict';
+function routeMethods(req, rsp, body) {
     var method = req.method.toUpperCase(), reqBody;
 
     if (method === 'POST') {
@@ -140,17 +129,16 @@ function routeMethods(req, res, body) {
     }
 
     if (req.method === 'GET') {
-        get(req, res);
+        get(req, rsp);
     } else if (req.method === 'POST') {
-        post(res, reqBody);
+        post(rsp, reqBody);
     } else {
-        res.writeHead(405, {'Content-Type': 'text/plain'});
-        res.end('Method not allowed');
+        rsp.writeHead(405, {'Content-Type': 'text/plain'});
+        rsp.end('Method not allowed');
     }
 }
 
-function main(req, res) {
-    'use strict';
+function main(req, rsp) {
     var body = [];
 
     req.on('error', function (err) {
@@ -160,17 +148,16 @@ function main(req, res) {
     }).on('end', function () {
         body = Buffer.concat(body).toString();
 
-        res.on('error', function (err) {
+        rsp.on('error', function (err) {
             console.error(err);
         });
 
-        routeMethods(req, res, body);
+        routeMethods(req, rsp, body);
     });
 }
 
 loadFiles();
 
-server = http.createServer(main).listen(4999, function () {
-    'use strict';
+http.createServer(main).listen(4999, function () {
     console.log('Server running on port 4999');
 });
