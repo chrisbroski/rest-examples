@@ -178,9 +178,17 @@ After determining what sort of operation is going to be performed on the network
 
 You probably don’t want just anyone deleting resources, so let’s add some basic authentication to it.
 
+## Add Back Content Types
+
+Notice what content-type we haven't used? `text/html` is only for valid HTML documents. If we want to return a snippet of HTML, it is better to use the `text/pht` (partial HTML) content-type.
+
 ## Uniform Interface Constraint /#4 – HATEOAS
 
-No, HATEOAS is not a spiteful breakfast cereal, it stands for Hypermedia as the Engine of Application State. If your web services comply with the first three interface constraints, then good for you. Your web service has now gone from RESTish to very RESTful. But it is not completely RESTful yet. RESTful network resources should be completely accessible through HTML in a web browser. Let’s expose our basic functions in a basic HTML wrapper.
+No, HATEOAS is not a spiteful breakfast cereal, it stands for Hypermedia as the Engine of Application State. If your web services comply with the first three interface constraints, then good for you. Your web service has now gone from RESTish to very RESTful. But it is not completely RESTful yet. RESTful network resources should be completely accessible through HTML in a web browser. Let’s expose our basic functions in a simple, valid, HTML5 wrapper.
+
+One trick is that browsers won't support methods other and GET and POST, so we'll have to spoof PUT and DELETE with hidden form fields.
+
+Please use CSS to style your HATEOAS wrapper for your REST service - It looks nice, doesn't cost many bytes, and won't mess anything up. No JavaScript is allowed, however. We will use that heavily when wiring this basic REST service into a full-featured Web UI.
 
 ## And for My Final Trick
 

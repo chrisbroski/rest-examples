@@ -38,7 +38,7 @@ http.createServer(collectReqBody).listen(4904, function () {
 Example PUT
 
 PUT / HTTP/1.1
-Content-Type: application/json
+Content-Type: text/plain
 Content-Length: 7
 
 Goodbye
