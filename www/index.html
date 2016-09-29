@@ -33,7 +33,7 @@ article li {margin-bottom: 0.3em; line-height: 1.4em; font-size: 16px; }
 
 <p onclick="changeMsg()">REST Message: <span id="msg"></span>
 <noscript>
-<a href="/msg">Get message</a>
+<a href="/hw">Get message</a>
 </noscript>
 </p>
 <div id="lastStatus"></div>
@@ -53,7 +53,7 @@ function changeMsg() {
     }
 
     xhr = new XMLHttpRequest();
-    xhr.open('POST', '/msg', true);
+    xhr.open('POST', '/hw', true);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -75,7 +75,7 @@ function changeMsg() {
 
 function getMessage() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/msg', true);
+    xhr.open('GET', '/hw', true);
     xhr.setRequestHeader('Accept', 'text/plain');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
