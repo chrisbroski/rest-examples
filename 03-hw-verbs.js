@@ -1,17 +1,17 @@
 var http = require('http'),
     msg = "Hello World";
 
-function routeMethods(req, res) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
+function routeMethods(req, rsp) {
+    rsp.writeHead(200, {'Content-Type': 'text/plain'});
 
     if (req.method === 'GET') {
-        res.end(msg);
+        rsp.end(msg);
     } else if (req.method === 'DELETE') {
         msg = '';
         rsp.end('Message deleted.');
     } else {
-        res.writeHead(405);
-        res.end('GET and DELETE only.');
+        rsp.writeHead(405);
+        rsp.end('GET and DELETE only.');
     }
 }
 
