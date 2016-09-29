@@ -8,17 +8,17 @@ Just because a network resource does not use the SOAP protocol, it does not mean
 
 ##### Any HTTP service
 
-HTTP is a network protocol designed with REST in mind. In fact, Roy Fielding, the author of Architectural Styles and the Design of Network-based Software Architectures where REST is defined, is the primary architect of HTTP. However, HTTP is flexible enough that the principles of REST can easily be disregarded when creating network applications using the protocol.
+HTTP is a network protocol designed with REST in mind. In fact, Roy Fielding, the author of Architectural Styles and the Design of Network-based Software Architectures where REST is defined, is the primary architect of HTTP. HTTP has some inherent RESTful properties, some optional ones, and some that you are given the power to mess up. The ones we can break are what I am going to focus one.
 
 ##### Writing “file path” style URLs instead of query string
 
-Where did this even come from?
+Where did this even come from? When I first heard the term *RESTful*, it was in regard to URL-rewriting to change query string information to a file-path style. I had no idea what they were talking about at the time, and now, after studying RESTful characteristics, I still have no idea. Changing name/value parameter strings to slash/paths is less verbose and I can appreciation that, but it makes the URL no more or less RESTful.
 
 ## What it is
 
-We will be taking our knowledge of REST from the origin: Architectural Styles and the Design of Network-based Software Architectures, and not from Wikipedia or any other secondary source. Section 5 of Field’s dissertation expand on REST in depth, but the core concepts are simple.
+We will be taking our knowledge of REST from the origin: Architectural Styles and the Design of Network-based Software Architectures, and not from Wikipedia or any other secondary source. Section 5 of Field’s dissertation expands on REST in depth, but the core concepts are simple.
 
-Client-Server architecture, Statelessness, Caching, Layered System, and Code-On-Demand are all baked into HTTP. Roy used these principles when designing HTTP so If you are using HTTP you don’t have a choice but to use these, so we don’t need to talk about them. The important part to know when designing your own Web application architecture is the Uniform Interface property.
+Client-Server architecture, Statelessness, Caching, Layered System, and Code-On-Demand are all baked into HTTP. Roy used these principles when designing HTTP so If you are using HTTP you don’t have a choice but to use these (or always have the option to use them). The important part to know when designing your own Web application architecture is the **Uniform Interface** property.
 
 > “REST is defined by four interface constraints: identification of resources; manipulation of resources through representations; self-descriptive messages; and, hypermedia as the engine of application state.”
 > -Section 5.1.5
@@ -37,15 +37,15 @@ A representation is information about the current or desired state of a resource
 
     http://catinthehat.drsuess.com/thing/1?action=delete
 
-This violates constraints #1 ad #2 by mixing representation with identification. Did you hear about the guy that accused Google of deleting his stuff?
+This violates constraints /#1 and /#2 by mixing representation with identification. Did you hear about the guy that accused Google spider of deleting his stuff? http://thedailywtf.com/articles/The_Spider_of_Doom
 
-    http://thedailywtf.com/articles/The_Spider_of_Doom The URL should simply be:
+The URL should simply be:
 
     http://catinthehat.drsuess.com/thing/1
 
-The desire to get rid of Thing #1 should reside in the request header. HTTP defines a few verbs to describe most types of resource alteration. Some common ones are:
+The desire to get rid of Thing /#1 should reside in the request header. HTTP defines a few verbs to describe most types of resource alteration. Some common ones are:
 
-- GET – “Safe” - it should NEVER alter the resource. Has caching.
+- GET – “Safe” - it should NEVER alter the resource. Can use caching.
 - POST – Can have request body.
 - PUT – Like POST, but should be idempotent
 - DELETE
@@ -117,7 +117,7 @@ The above URL does not include representation information, but what is all that 
 
 I know from looking at the data model that the area id 26179 is unique and the distributor, customer, group, building or floor id is needed to accurately identify the area data. I would argue that the extra path information is not valuable and exposes information to the client that may be better kept quiet. But that’s just, like, my opinion, man. If your tool automatically makes URLs like these, I would not lose too much sleep, just know that there is no good reason for it.
 
-But know that you don’t need to describe the relational model in the URL.
+But know that there is not any great benefit to describing the relational model in the URL.
 
 ## What’s Wrong with This URL Round 4
 
@@ -150,7 +150,7 @@ HTTP has a clear, concise, and useful status message system that few developers 
 - 4xx – Client error
 - 5xx – Server error
 
-In the case of 400 and 500 errors, in addition to the status line, you can (and should) include a verbose body (in plain text, HTML, JSON, or whatever content type you deem appropriate) explaining the reason for the error.
+In the case of 400 errors, in addition to the status line, you can (and should) include a verbose body (in plain text, HTML, JSON, or whatever content type you deem appropriate) explaining what the user did wrong and how to fix it.
 
 You aren’t limited to predefined status code. They are only a good starting point. Your application could send 448 YOUR BROWSER SUCKS or 592 MOUSE CHEWED NETWORK CABLE if you wanted. I’ve never needed to, as I’ve always been able to find a standard code that is appropriate, but it’s good to know you can if you need to.
 

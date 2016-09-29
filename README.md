@@ -40,8 +40,8 @@ Make an nginx reverse proxy like so
             try_files $uri $uri/ $uri.html $uri.shtml $uri.txt =404;
         }
 
-        location /comment {
-            proxy_pass http://127.0.0.1:4999;
+        location /msg {
+            proxy_pass http://127.0.0.1:4908;
             proxy_set_header Host $host;
         }
     }

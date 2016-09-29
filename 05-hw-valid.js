@@ -8,14 +8,12 @@ function rspGet(req, rsp) {
 
 function rspPut(req, rsp, body) {
     if (!body.length) {
-        console.log('0 length');
         rsp.writeHead(400, {'Content-Type': 'text/plain'});
         rsp.end('Message text required.');
         return;
     }
 
     if (body.length > 50) {
-        console.log('0 length');
         rsp.writeHead(400, {'Content-Type': 'text/plain'});
         rsp.end('Message text must be 50 characters or less.');
         return;

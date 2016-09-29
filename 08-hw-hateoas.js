@@ -14,6 +14,10 @@ function escapeJSON(s) {
     return s.replace(/"/g, "\\\"");
 }
 
+function escapeAttribute(s) {
+    return s.replace(/"/g, "&quot;");
+}
+
 function rspGet(req, rsp) {
     rsp.setHeader('Cache-Control', 'max-age=0,no-cache,no-store,post-check=0,pre-check=0');
 
@@ -28,20 +32,18 @@ function rspGet(req, rsp) {
         rsp.end('<p>' + escapeHTML(msg) + '</p>');
     } else {
         rsp.writeHead(200, {'Content-Type': 'text/html'});
-        rsp.end(htmlStart + msg.replace(/"/g, "&quot;") + htmlEnd + htmlDeleteForm);
+        rsp.end(htmlStart + escapeAttribute(msg) + htmlEnd + htmlDeleteForm);
     }
 }
 
 function rspPut(req, rsp, body) {
     if (!body.msg.length) {
-        console.log('0 length');
         rsp.writeHead(400, {'Content-Type': 'text/plain'});
         rsp.end('Message text required.');
         return;
     }
 
     if (body.msg.length > 50) {
-        console.log('0 length');
         rsp.writeHead(400, {'Content-Type': 'text/plain'});
         rsp.end('Message text must be 50 characters or less.');
         return;

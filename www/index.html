@@ -5,66 +5,85 @@
 <title>Page with Comments</title>
 
 <style type="text/css">
-/*! simple.css | MIT License | github.com/chrisbroski/simple-css/ */
 html {padding: 10px 10px 200px; font-family: droid sans, sans-serif; }
 body {margin: 0 auto; max-width: 580px; }
 article > *:first-child {margin-top: 0; }
 article p {line-height: 1.4em; font-size: 17px; }
 article li {margin-bottom: 0.3em; line-height: 1.4em; font-size: 16px; }
+
+#msg {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.fade {
+    color: rgba(0, 0, 0, 0);
+    transition: color 4s;
+}
+
 </style>
 
 <body>
+
 <article>
-<h1>Page with Comments</h1>
+<h1>Page with Ajax Message</h1>
 
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque id ullamcorper erat. Praesent mollis pellentesque ligula, ac finibus odio fringilla sit amet. Praesent ac tortor sit amet massa consequat fermentum et ac nisl. Praesent in dictum lorem. Nullam ut ex nisi. Maecenas erat ante, feugiat a elit vel, condimentum laoreet sem. Mauris porttitor neque sed leo rhoncus, nec eleifend tortor sodales. Aliquam enim mauris, rhoncus sit amet nisi at, auctor fringilla enim. Nulla rhoncus nibh vitae facilisis fermentum. Suspendisse semper aliquam erat, non aliquet urna placerat nec. Morbi purus mi, venenatis feugiat auctor vestibulum, porttitor quis urna. Donec non ex rhoncus, consequat massa at, tempor purus. Suspendisse vel rutrum odio. Nulla tincidunt leo nisi, eu gravida erat varius eget.
 
-<form method="post" action="">
-<p><label>Your Name <input id="commentName"></label>
-<p><label>Your Comment</label><br>
-    <textarea rows="5" cols="30"></textarea>
-<p><button>Post your comment</button>
-</form>
-
-<div id="comments"></div>
+<p onclick="changeMsg()">REST Message: <span id="msg"></span>
+<noscript>
+<a href="/msg">Get message</a>
+</noscript>
+</p>
+<div id="lastStatus"></div>
 
 </article>
 
 <script>
-document.querySelector('form').onsubmit = function () {
-    document.querySelector('button').disabled = true;
-    document.querySelector('button').textContent = 'Posting comment...';
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/comment', true);
+function changeMsg() {
+    var msg = document.getElementById("msg"),
+        lastStatus = document.getElementById("lastStatus"),
+        newMsg,
+        xhr;
+
+    newMsg = prompt("Enter a new message");
+    if (newMsg === null) {
+        return;
+    }
+
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', '/msg', true);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=UTF-8');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status >= 200 && xhr.status < 400) {
-                // show new comment
+                lastStatus.textContent = xhr.responseText;
+                lastStatus.className = "fade";
+                getMessage();
             } else {
                 // handle error
-                alert(xhr.responseText);
+                lastStatus.textContent = xhr.responseText;
+                lastStatus.className = "fade";
             }
-            document.querySelector('button').disabled = false;
-            document.querySelector('button').textContent = 'Post your comment';
         }
     };
-    return false;
-};
+    xhr.send("msg=" + newMsg + "&method=PUT");
+    lastStatus.textContent = 'Changing message';
+    lastStatus.className = '';
+}
 
-function init() {
-    // get comments
+function getMessage() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/comment', true);
-    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.open('GET', '/msg', true);
+    xhr.setRequestHeader('Accept', 'text/plain');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-            //document.getElementById('comments').innerHTML = xhr.responseText;
-            console.log(JSON.parse(xhr.responseText));
+            document.getElementById('msg').textContent = xhr.responseText;
         }
     };
     xhr.send();
 }
 
-window.onload = init;
+window.onload = getMessage;
 </script>

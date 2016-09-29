@@ -26,14 +26,12 @@ function rspGet(req, rsp) {
 
 function rspPut(req, rsp, body) {
     if (!body.length) {
-        console.log('0 length');
         rsp.writeHead(400, {'Content-Type': 'text/plain'});
         rsp.end('Message text required.');
         return;
     }
 
     if (body.length > 50) {
-        console.log('0 length');
         rsp.writeHead(400, {'Content-Type': 'text/plain'});
         rsp.end('Message text must be 50 characters or less.');
         return;
@@ -85,13 +83,3 @@ function collectReqBody(req, rsp) {
 http.createServer(collectReqBody).listen(4907, function () {
     console.log('Server started on port :4907');
 });
-
-/*
-Example PUT
-
-PUT / HTTP/1.1
-Content-Type: text/plain
-Content-Length: 7
-
-Goodbye
-*/
