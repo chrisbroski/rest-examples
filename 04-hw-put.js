@@ -1,5 +1,5 @@
 var http = require('http'),
-    msg = "Hello World\n";
+    msg = "Hello World";
 
 function routeMethods(req, rsp, body) {
     rsp.writeHead(200, {'Content-Type': 'text/plain'});
